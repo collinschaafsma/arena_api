@@ -1,0 +1,40 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: http://localhost:9000/pets
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+      X-Pets-Token:
+      - changeme
+      User-Agent:
+      - Faraday v0.15.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Vary:
+      - Accept-Encoding
+      Content-Length:
+      - '273'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 06 May 2018 18:30:55 GMT
+    body:
+      encoding: ASCII-8BIT
+      string: '[{"id":"40e7f251-8bb0-479b-b590-e6c45446c059","name":"Fluffy","strength":12,"speed":21,"intelligence":22,"integrity":66},{"id":"4318d44f-2217-4c5d-a5db-37309db7797a","name":"Borris","strength":98,"speed":10,"intelligence":2,"integrity":26},{"id":"e98bcfc7-7dd7-47cd-9339-b8594a103299","name":"Heidi","strength":23,"speed":100,"intelligence":10,"integrity":25},{"id":"0c1456f0-47ff-4aec-ac83-1451b5f0192e","name":"Heidi
+        2","strength":23,"speed":100,"intelligence":10,"integrity":25},{"id":"b7def326-7b4c-43aa-80cf-dde34470c4a4","name":"Heidi
+        3","strength":23,"speed":100,"intelligence":10,"integrity":25}]'
+    http_version: 
+  recorded_at: Sun, 06 May 2018 18:30:55 GMT
+recorded_with: VCR 4.0.0

@@ -1,0 +1,174 @@
+#!/usr/bin/env ruby
+require 'thor'
+require 'battle_pets'
+
+
+class Battle < Thor
+
+  desc "start", "Start a new contest!"
+  def start
+    configure_battle_pets_api_wrapper
+    view_existing_pets = yes?('Would you like to battle with existing pets from the battle-pets-api? (y/n)')
+    if view_existing_pets
+      current_pets_route
+    else
+      create_new_pets_route
+    end
+  end
+
+  private
+
+  def current_pets_route
+    pets = battle_pets_api_client.all
+    if pets.length > 1
+      choices = pets.map.with_index{ |a, i|
+        [
+          i+1, a.name,
+          "Strength/#{a.strength}",
+          "Speed/#{a.speed}",
+          "Intelligence/#{a.intelligence}",
+          "Integrity/#{a.integrity}"
+        ]
+      }
+      print_table(choices)
+      pet_index_1 = (ask("Pick Battle Pet #1:").to_i - 1)
+      pet_index_2 = (ask("Pick Battle Pet #2:").to_i - 1)
+      if pet_index_2 == pet_index_1
+        say("How the hell is a pet gonna battle itself?", :red)
+        pet_index_2 = (ask("Pick Battle Pet #2:").to_i - 1)
+      end
+      create_contest([pets[pet_index_1],pets[pet_index_2]])
+    else
+      say("Sorry, we don't have enough pets in the system. Time to create some!", :red)
+      create_new_pets_route
+    end
+  end
+
+  def create_new_pets_route
+    say("Ok, cool. Let's create a pet!")
+    name = ask("Enter pet name:")
+    if name.length < 5
+      name = ask("Pet name must be at least 5 characters:")
+    end
+    strength = ask("Enter pet strength: (1-100)").to_i
+    speed = ask("Enter pet speed: (1-100)").to_i
+    intelligence = ask("Enter pet intelligence: (1-100)").to_i
+    integrity = ask("Enter pet integrity: (1-100)").to_i
+    say("Got it. Building pet....")
+
+    created_pet = battle_pets_api_client.create(
+      { name: name, strength: strength, intelligence: intelligence, speed: speed, integrity: integrity }
+    )
+
+    say("Pet #{created_pet.name} created!", :green)
+    if yes?("Would you like to create another pet?")
+      create_new_pets_route
+    else
+      current_pets_route
+    end
+  end
+
+  def create_contest(pets)
+    say("#{pets[0].name} vs #{pets[1].name}", :green)
+    say("Let's see what sort of Contest types are loaded....")
+    response = arena_api_client.get '/api/v1/contest_types'
+    contest_types = JSON.parse(response.body)
+
+    choices = contest_types.map.with_index{ |a, i| [i+1, "#{a['id']} / #{a['desc']}"] }
+    print_table(choices)
+
+    contest_type_index = (ask("Pick a contest type.").to_i - 1)
+    say("Creating contest / #{pets[0].name} vs #{pets[1].name} in #{contest_types[contest_type_index]['id']}", :green)
+    contest_id = battle(pets, contest_types[contest_type_index]['id'])
+    say("Contest ##{contest_id} created!", :green)
+
+    if yes?("Would you like to view the status of your contest?")
+      contest_status(contest_id)
+    elsif yes?("Would you like to view the status of all the contests?")
+      all_contests
+    else
+      if yes?("Would you like to play again?")
+        start
+      else
+        say("Bye!", :red)
+      end
+    end
+  end
+
+  def all_contests
+    say("Getting all contests..")
+    response = arena_api_client.get '/api/v1/contests'
+    contests = JSON.parse(response.body)
+
+    contest_list = contests.map.with_index{ |a, i|
+      [i+1, a['id'], a['contest_type'], a['status'], a['winner_id'], a['created_at']]
+    }
+
+    print_table(contest_list)
+
+    if yes?("Would you like to play again?")
+      start
+    else
+      say("Bye!", :red)
+    end
+  end
+
+  def contest_status(id)
+    say("Getting status of contest ##{id}")
+    response = arena_api_client.get "/api/v1/contests/#{id}"
+    contest = JSON.parse(response.body)
+    if contest['status'] == 'finished'
+      say("Contest ##{contest['id']} status is #{contest['status']}.")
+      say("The winner is....")
+      winning_pet = battle_pets_api_client.find(contest['winner_id'])
+      say(winning_pet.name, :green)
+    else
+      say("Contest ##{contest['id']} status is #{contest['status']}.", :yellow)
+    end
+
+    if yes?("Would you like to view the status of your contest again?")
+      contest_status(id)
+    else
+      say("OK cool. We'll show you all the contests then...")
+      all_contests
+    end
+  end
+
+  def battle(pets, contest_type)
+    payload = {
+       contest: {
+         contest_type: contest_type,
+         contest_pets_attributes: [
+           {pet_uid: pets[0].id},
+           {pet_uid: pets[1].id}
+          ]
+       }
+    }
+    response = arena_api_client.post do |req|
+      req.url '/api/v1/contests'
+      req.body = JSON.generate(payload)
+    end
+    contest_id = JSON.parse(response.body)['id']
+  end
+
+  def configure_battle_pets_api_wrapper
+    BattlePets.configure do |config|
+      config.api_key = ENV['BATTLE_PETS_API_KEY']
+      config.api_url = ENV['BATTLE_PETS_API_URL']
+    end
+  end
+
+  def battle_pets_api_client
+    @battle_pets_api_client ||= BattlePets::Client.new
+  end
+
+  def arena_api_client
+    @arena_api_client ||= Faraday.new(url: "http://localhost:3000") do |faraday|
+      faraday.headers['Content-Type'] = 'application/json'
+      faraday.headers['Accept'] = 'application/json'
+      faraday.adapter  Faraday.default_adapter
+    end
+  end
+end
+
+Battle.start

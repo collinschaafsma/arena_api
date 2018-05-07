@@ -1,0 +1,8 @@
+#!/bin/bash
+bundle exec rspec &&
+cd gems/arena &&
+bundle exec rspec &&
+cd ../../ &&
+cd gems/battle_pets &&
+bundle exec rspec &&
+cd ../../

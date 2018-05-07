@@ -1,0 +1,38 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://localhost:9000/pets
+    body:
+      encoding: UTF-8
+      string: '{"name":"Bone Crusher","strength":98,"intelligence":2,"speed":10,"integrity":26}'
+    headers:
+      Content-Type:
+      - application/json
+      Accept:
+      - application/json
+      X-Pets-Token:
+      - changeme
+      User-Agent:
+      - Faraday v0.15.0
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+  response:
+    status:
+      code: 201
+      message: Created
+    headers:
+      Vary:
+      - Accept-Encoding
+      Content-Length:
+      - '127'
+      Content-Type:
+      - application/json
+      Date:
+      - Sun, 06 May 2018 18:40:05 GMT
+    body:
+      encoding: ASCII-8BIT
+      string: '{"id":"f693280b-63da-4129-be79-e00946b317b7","name":"Bone Crusher","strength":98,"speed":10,"intelligence":2,"integrity":26}'
+    http_version: 
+  recorded_at: Sun, 06 May 2018 18:40:05 GMT
+recorded_with: VCR 4.0.0
