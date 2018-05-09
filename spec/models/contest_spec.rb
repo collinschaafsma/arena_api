@@ -4,18 +4,18 @@ RSpec.describe Contest, type: :model do
   subject { Contest.new }
 
   context 'validations' do
-    it { should validate_presence_of :contest_type }
+    it { is_expected.to validate_presence_of :contest_type }
   end
 
   context 'associations' do
-    it { should have_many(:contest_pets) }
+    it { is_expected.to have_many(:contest_pets) }
   end
 
   context 'columns' do
-    it { should have_db_column(:status).of_type(:integer).with_options(default: 'pending') }
-    it { should have_db_column(:contest_type).of_type(:string) }
-    it { should have_db_column(:winner_id).of_type(:string) }
-    it { should have_db_column(:finished_at).of_type(:datetime) }
+    it { is_expected.to have_db_column(:status).of_type(:integer).with_options(default: 'pending') }
+    it { is_expected.to have_db_column(:contest_type).of_type(:string) }
+    it { is_expected.to have_db_column(:winner_id).of_type(:string) }
+    it { is_expected.to have_db_column(:finished_at).of_type(:datetime) }
   end
 
   context 'attributes' do

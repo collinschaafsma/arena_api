@@ -4,16 +4,16 @@ RSpec.describe ContestPet, type: :model do
   subject { ContestPet.new }
 
   context 'validations' do
-    it { should validate_presence_of :pet_uid }
+    it { is_expected.to validate_presence_of :pet_uid }
   end
 
   context 'associations' do
-    it { should belong_to(:contest) }
+    it { is_expected.to belong_to(:contest) }
   end
 
   context 'columns' do
-    it { should have_db_column(:contest_id).of_type(:integer) }
-    it { should have_db_column(:pet_uid).of_type(:string) }
+    it { is_expected.to have_db_column(:contest_id).of_type(:integer) }
+    it { is_expected.to have_db_column(:pet_uid).of_type(:string) }
   end
 
   context 'attributes' do
