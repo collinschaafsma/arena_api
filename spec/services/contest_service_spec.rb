@@ -9,7 +9,7 @@ describe ContestService do
     expect(service.contest.name).to eq("MyClass")
   end
 
-  context 'Public Instance methods' do
+  context 'when not initialized' do
     it 'has a #all method' do
       expect(subject).to respond_to(:all)
     end
@@ -27,7 +27,7 @@ describe ContestService do
     end
   end
 
-  context 'Private Instance methods' do
+  context 'when initialized' do
     it 'has a #fetch_pets_to_battle method' do
       expect(subject).not_to respond_to(:fetch_pets_to_battle)
     end

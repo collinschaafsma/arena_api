@@ -18,7 +18,7 @@ RSpec.describe Contest, type: :model do
     it { should have_db_column(:finished_at).of_type(:datetime) }
   end
 
-  context "attributes" do
+  context 'attributes' do
     it 'has status' do
       expect(build(:contest, status: 'pending')).to have_attributes(status: 'pending')
     end

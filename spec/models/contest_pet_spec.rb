@@ -16,7 +16,7 @@ RSpec.describe ContestPet, type: :model do
     it { should have_db_column(:pet_uid).of_type(:string) }
   end
 
-  context "attributes" do
+  context 'attributes' do
     it 'has contest_id' do
       expect(build(:contest_pet, contest_id: 1)).to have_attributes(contest_id: 1)
     end
