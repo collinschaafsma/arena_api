@@ -21,7 +21,7 @@ RSpec.describe Api::V1::ContestsController, type: :controller do
         expect(response).to have_http_status(:ok)
       end
 
-      it 'it has a content type of application/json' do
+      it 'has a content type of application/json' do
         expect(response.content_type).to eq('application/json')
       end
 
