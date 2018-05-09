@@ -52,9 +52,13 @@ The `battle` script will walk you through getting those pets to battle!
 
 You might want to also run the specs for the `arena` gem.
 
+`cd gems/arena && bundle && ../../`
+
 `cd gems/arena && bundle exec rspec && ../../`
 
 You probably should run the specs for the `battle_pets` gem as well.
+
+`cd gems/battle_pets && bundle && ../../`
 
 `cd gems/battle_pets && bundle exec rspec && ../../`
 
